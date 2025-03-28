@@ -1,5 +1,5 @@
 "use client"
-
+import { Navigate, useNavigate} from "react-router-dom"
 import { useState, useEffect } from "react"
 import "bootstrap-icons/font/bootstrap-icons.css"
 import "bootstrap/dist/css/bootstrap.min.css"
@@ -13,7 +13,7 @@ function PostListPage() {
   const [loading, setLoading] = useState(true)
   const [isLoggedIn, setIsLoggedIn] = useState(false) // 로그인 상태 관리
   const [searchTerm, setSearchTerm] = useState("")
-
+  const navigate = useNavigate();
   useEffect(() => {
     // Fetch posts from backend
     const fetchPosts = async () => {
@@ -80,7 +80,8 @@ function PostListPage() {
           <div className="d-flex align-items-center position-relative">
             {/* 글쓰기 버튼 - 왼쪽 고정 */}
             <div className="position-absolute start-0">
-              <button className="btn btn-primary write-btn">
+              <button className="btn btn-primary write-btn" 
+              onClick={()=> navigate("/community/wirte")}>
                 <i className="bi bi-pencil-square me-1"></i> 글쓰기
               </button>
             </div>
