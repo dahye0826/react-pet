@@ -18,6 +18,8 @@ function PostDetailPage() {
   const [showReportModal, setShowReportModal] = useState(false)
   const [reportReason, setReportReason] = useState("")
   const [reportDescription, setReportDescription] = useState("")
+  const [showCommentReportModal, setShowCommentReportModal] = useState(false)
+  const [selectedCommentId, setSelectedCommentId] = useState(null)
 
   // 댓글 수정 관련 상태
   const [editingCommentId, setEditingCommentId] = useState(null)
@@ -42,13 +44,13 @@ function PostDetailPage() {
             id: Number(id),
             title: "강아지랑 부산여행",
             content: `
-              <p>지난 주말 우리 댕댕이와 함께한 부산 여행 후기입니다.</p>
-              <p>해운대에서 아침 일출을 보고, 광안리에서 야경을 즐겼어요. 생각보다 많은 장소가 반려견 동반이 가능해서 좋았습니다.</p>
-              <p>특히 해운대 해변은 이른 아침과 저녁에는 반려견과 함께 산책할 수 있어요. 모래사장을 뛰어다니는 우리 강아지의 모습이 정말 행복해 보였습니다.</p>
-              <p>숙소는 '멍멍 펜션'이라는 곳을 이용했는데, 반려견 전용 놀이터와 샤워 시설이 있어서 편리했어요.</p>
-              <p>부산에서 반려견과 함께 갈 수 있는 맛집도 몇 군데 찾았는데, 해운대 근처의 '바다 테라스'라는 카페는 야외 테라스에서 반려견과 함께 식사할 수 있어 좋았습니다.</p>
-              <p>다음에 또 방문하게 된다면 태종대나 오륙도 쪽도 가보고 싶네요. 반려견과 함께하는 여행은 항상 특별한 것 같아요!</p>
-            `,
+        <p>지난 주말 우리 댕댕이와 함께한 부산 여행 후기입니다.</p>
+        <p>해운대에서 아침 일출을 보고, 광안리에서 야경을 즐겼어요. 생각보다 많은 장소가 반려견 동반이 가능해서 좋았습니다.</p>
+        <p>특히 해운대 해변은 이른 아침과 저녁에는 반려견과 함께 산책할 수 있어요. 모래사장을 뛰어다니는 우리 강아지의 모습이 정말 행복해 보였습니다.</p>
+        <p>숙소는 '멍멍 펜션'이라는 곳을 이용했는데, 반려견 전용 놀이터와 샤워 시설이 있어서 편리했어요.</p>
+        <p>부산에서 반려견과 함께 갈 수 있는 맛집도 몇 군데 찾았는데, 해운대 근처의 '바다 테라스'라는 카페는 야외 테라스에서 반려견과 함께 식사할 수 있어 좋았습니다.</p>
+        <p>다음에 또 방문하게 된다면 태종대나 오륙도 쪽도 가보고 싶네요. 반려견과 함께하는 여행은 항상 특별한 것 같아요!</p>
+      `,
             author: "멍멍맘",
             authorId: 1,
             createdAt: "2023-05-15",
@@ -103,6 +105,12 @@ function PostDetailPage() {
 
   const handleCommentSubmit = (e) => {
     e.preventDefault()
+
+    // 로그인 상태 확인
+    if (!isLoggedIn) {
+      alert("댓글을 작성하려면 로그인이 필요합니다.")
+      return
+    }
 
     if (!commentText.trim()) return
 
@@ -165,6 +173,76 @@ function PostDetailPage() {
     }
   }
 
+  // 댓글 신고 처리
+  const handleReportComment = (commentId) => {
+    // 로그인 상태 확인
+    if (!isLoggedIn) {
+      alert("신고하려면 로그인이 필요합니다.")
+      return
+    }
+
+    setSelectedCommentId(commentId)
+    setShowCommentReportModal(true)
+    setReportReason("")
+  }
+
+  // 댓글 신고 제출
+  const handleCommentReportSubmit = () => {
+    if (!reportReason) {
+      alert("신고 사유를 선택해주세요.")
+      return
+    }
+
+    const targetComment = comments.find((comment) => comment.id === selectedCommentId)
+    if (!targetComment) return
+
+    // 로컬 스토리지에 신고 데이터 저장
+    const existingReports = JSON.parse(localStorage.getItem("reportedComments") || "[]")
+
+    // 이미 신고된 댓글인지 확인
+    const existingReportIndex = existingReports.findIndex(
+      (report) => report.commentId === selectedCommentId && report.postId === Number(id),
+    )
+
+    const updatedReports = [...existingReports]
+
+    if (existingReportIndex !== -1) {
+      // 이미 신고된 댓글이면 신고 사유 추가
+      const existingReport = existingReports[existingReportIndex]
+      const existingReasonIndex = existingReport.reports.findIndex((r) => r.reason === reportReason)
+
+      if (existingReasonIndex !== -1) {
+        // 같은 사유로 이미 신고된 경우 카운트 증가
+        existingReport.reports[existingReasonIndex].count += 1
+      } else {
+        // 새로운 사유로 신고된 경우 사유 추가
+        existingReport.reports.push({ reason: reportReason, count: 1 })
+      }
+
+      existingReport.reportCount += 1
+      updatedReports[existingReportIndex] = existingReport
+    } else {
+      // 새로운 신고 댓글 추가
+      const newReport = {
+        postId: Number(id),
+        postTitle: post.title,
+        commentId: selectedCommentId,
+        commentContent: targetComment.content,
+        author: targetComment.author,
+        reportCount: 1,
+        reports: [{ reason: reportReason, count: 1 }],
+      }
+      updatedReports.push(newReport)
+    }
+
+    localStorage.setItem("reportedComments", JSON.stringify(updatedReports))
+
+    alert("댓글 신고가 접수되었습니다.")
+    setShowCommentReportModal(false)
+    setReportReason("")
+    setSelectedCommentId(null)
+  }
+
   const handleGoBack = () => {
     navigate("/community")
   }
@@ -180,6 +258,12 @@ function PostDetailPage() {
   }
 
   const handleReportClick = () => {
+    // 로그인 상태 확인
+    if (!isLoggedIn) {
+      alert("신고하려면 로그인이 필요합니다.")
+      return
+    }
+
     setShowReportModal(true)
   }
 
@@ -313,7 +397,7 @@ function PostDetailPage() {
           </div>
 
           <div className="post-actions mt-4 d-flex justify-content-between">
-            {post.authorId === currentUserId ? ( // 현재 사용자가 작성자인 경우
+            {post.authorId === currentUserId && isLoggedIn ? ( // 현재 사용자가 작성자인 경우
               <div>
                 <button className="btn btn-outline-secondary me-2" onClick={handleEditClick}>
                   <i className="bi bi-pencil-square me-1"></i> 수정
@@ -327,7 +411,7 @@ function PostDetailPage() {
             )}
 
             {/* 작성자가 아닌 경우에만 신고 버튼 표시 */}
-            {post.authorId !== currentUserId && isLoggedIn && (
+            {post.authorId !== currentUserId && (
               <button className="btn btn-outline-warning" onClick={handleReportClick}>
                 <i className="bi bi-exclamation-triangle me-1"></i> 신고하기
               </button>
@@ -337,29 +421,24 @@ function PostDetailPage() {
           <div className="post-comments mt-5">
             <h4 className="comments-title">댓글 {comments.length}개</h4>
 
-            {isLoggedIn ? (
-              <form onSubmit={handleCommentSubmit} className="comment-form mt-3">
-                <div className="mb-3">
-                  <textarea
-                    className="form-control"
-                    rows="3"
-                    placeholder="댓글을 작성해주세요"
-                    value={commentText}
-                    onChange={(e) => setCommentText(e.target.value)}
-                    required
-                  ></textarea>
-                </div>
-                <div className="text-end">
-                  <button type="submit" className="btn btn-primary">
-                    댓글 등록
-                  </button>
-                </div>
-              </form>
-            ) : (
-              <div className="alert alert-info mt-3">
-                댓글을 작성하려면 <a href="/login">로그인</a>이 필요합니다.
+            {/* 로그인 상태와 관계없이 댓글 폼 표시, 제출 시 로그인 확인 */}
+            <form onSubmit={handleCommentSubmit} className="comment-form mt-3">
+              <div className="mb-3">
+                <textarea
+                  className="form-control"
+                  rows="3"
+                  placeholder={isLoggedIn ? "댓글을 작성해주세요" : "댓글을 작성하려면 로그인이 필요합니다"}
+                  value={commentText}
+                  onChange={(e) => setCommentText(e.target.value)}
+                  required
+                ></textarea>
               </div>
-            )}
+              <div className="text-end">
+                <button type="submit" className="btn btn-primary">
+                  댓글 등록
+                </button>
+              </div>
+            </form>
 
             <div className="comments-list mt-4">
               {comments.length > 0 ? (
@@ -403,22 +482,35 @@ function PostDetailPage() {
                             </div>
                           </div>
 
-                          {comment.authorId === currentUserId && ( // 현재 사용자가 댓글 작성자인 경우
-                            <div className="comment-actions">
+                          <div className="comment-actions">
+                            {comment.authorId === currentUserId && isLoggedIn && (
+                              // 현재 사용자가 댓글 작성자인 경우
+                              <>
+                                <button
+                                  className="btn btn-sm btn-link text-decoration-none"
+                                  onClick={() => handleEditComment(comment)}
+                                >
+                                  수정
+                                </button>
+                                <button
+                                  className="btn btn-sm btn-link text-decoration-none text-danger"
+                                  onClick={() => handleDeleteComment(comment.id)}
+                                >
+                                  삭제
+                                </button>
+                              </>
+                            )}
+                            {comment.authorId !== currentUserId && isLoggedIn && (
+                              // 현재 사용자가 댓글 작성자가 아닌 경우 신고 버튼 표시 (로그인한 경우에만)
                               <button
-                                className="btn btn-sm btn-link text-decoration-none"
-                                onClick={() => handleEditComment(comment)}
+                                className="btn btn-sm btn-link text-decoration-none text-warning"
+                                onClick={() => handleReportComment(comment.id)}
                               >
-                                수정
+                                <i className="bi bi-exclamation-triangle-fill me-1"></i>
+                                신고
                               </button>
-                              <button
-                                className="btn btn-sm btn-link text-decoration-none text-danger"
-                                onClick={() => handleDeleteComment(comment.id)}
-                              >
-                                삭제
-                              </button>
-                            </div>
-                          )}
+                            )}
+                          </div>
                         </div>
                         <div className="comment-content mt-2">{comment.content}</div>
                       </>
@@ -435,7 +527,7 @@ function PostDetailPage() {
         </div>
       </div>
 
-      {/* 신고하기 모달 */}
+      {/* 게시글 신고하기 모달 */}
       {showReportModal && <div className="modal-backdrop show"></div>}
 
       <div className={`modal ${showReportModal ? "show d-block" : ""}`} tabIndex="-1">
@@ -537,13 +629,101 @@ function PostDetailPage() {
         </div>
       </div>
 
+      {/* 댓글 신고하기 모달 */}
+      {showCommentReportModal && <div className="modal-backdrop show"></div>}
+
+      <div className={`modal ${showCommentReportModal ? "show d-block" : ""}`} tabIndex="-1">
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">
+                <i className="bi bi-exclamation-triangle me-2 text-warning"></i>
+                댓글 신고하기
+              </h5>
+              <button type="button" className="btn-close" onClick={() => setShowCommentReportModal(false)}></button>
+            </div>
+            <div className="modal-body">
+              <form>
+                <div className="mb-3">
+                  <label className="form-label fw-bold">신고 사유</label>
+                  <div className="form-check mt-2">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name="commentReportReason"
+                      id="commentReason1"
+                      value="부적절한 내용"
+                      checked={reportReason === "부적절한 내용"}
+                      onChange={(e) => setReportReason(e.target.value)}
+                    />
+                    <label className="form-check-label" htmlFor="commentReason1">
+                      부적절한 내용
+                    </label>
+                  </div>
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name="commentReportReason"
+                      id="commentReason2"
+                      value="스팸 또는 광고"
+                      checked={reportReason === "스팸 또는 광고"}
+                      onChange={(e) => setReportReason(e.target.value)}
+                    />
+                    <label className="form-check-label" htmlFor="commentReason2">
+                      스팸 또는 광고
+                    </label>
+                  </div>
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name="commentReportReason"
+                      id="commentReason3"
+                      value="욕설 또는 혐오 발언"
+                      checked={reportReason === "욕설 또는 혐오 발언"}
+                      onChange={(e) => setReportReason(e.target.value)}
+                    />
+                    <label className="form-check-label" htmlFor="commentReason3">
+                      욕설 또는 혐오 발언
+                    </label>
+                  </div>
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name="commentReportReason"
+                      id="commentReason4"
+                      value="기타"
+                      checked={reportReason === "기타"}
+                      onChange={(e) => setReportReason(e.target.value)}
+                    />
+                    <label className="form-check-label" htmlFor="commentReason4">
+                      기타
+                    </label>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-secondary" onClick={() => setShowCommentReportModal(false)}>
+                취소
+              </button>
+              <button type="button" className="btn btn-danger" onClick={handleCommentReportSubmit}>
+                신고하기
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="container mb-4">
         <div className="text-end">
           <button className="btn btn-sm btn-outline-secondary me-2" onClick={() => setIsLoggedIn(!isLoggedIn)}>
             테스트: {isLoggedIn ? "로그아웃 상태로 변경" : "로그인 상태로 변경"}
           </button>
           <button
-            className="btn btn-sm btn-outline-primary"
+            className="btn btn-sm btn-outline-primary me-2"
             onClick={() => setCurrentUserId(currentUserId === 1 ? 999 : 1)}
           >
             테스트: {currentUserId === 1 ? "일반 사용자로 변경" : "작성자로 변경"}

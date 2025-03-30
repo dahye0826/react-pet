@@ -1,10 +1,16 @@
 :root {
-  --primary-color: #4ecdc4; /* 주 색상 (버튼, 포인트 등) */
-  --secondary-color: #a5e1e9; /* 보조 색상 */
-  --accent-color: #2a9d8f; /* 강조 색상 (링크, 태그 등) */
-  --text-color: #2c3e50; /* 본문 글자색 */
-  --light-bg: #f0f9fa; /* 배경색 (밝은 톤) */
-  --border-color: #d1eeef; /* 테두리 색 */
+  --primary-color: #4ecdc4;
+  --secondary-color: #a5e1e9;
+  --accent-color: #2a9d8f;
+  --text-color: #2c3e50;
+  --light-bg: #f0f9fa;
+  --border-color: #d1eeef;
+  --warning-color: #f57c00;
+  --warning-bg: #fff8e1;
+  --warning-border: #ffe082;
+  --danger-color: #d32f2f;
+  --danger-bg: #ffebee;
+  --danger-border: #ffcdd2;
 }
 
 .custom-table {
@@ -16,18 +22,18 @@
   margin: 0 auto;
 }
 
-.post-header h2 {
+.review-header h2 {
   color: var(--accent-color);
   font-weight: 700;
   letter-spacing: 1px;
 }
 
-.post-header p {
+.review-header p {
   color: var(--text-color);
-  font-size: 1.1rem; /* 16px*1.1 */
+  font-size: 1.1rem;
 }
 
-.post-header .subtitle {
+.review-header .subtitle {
   color: #888;
   font-size: 0.95rem;
   font-style: italic;
@@ -58,11 +64,6 @@
   background-color: #edfbfb;
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-}
-
-.post-list-item h5 {
-  color: var(--text-color);
-  font-weight: 600;
 }
 
 .btn-primary {
@@ -179,6 +180,62 @@
   color: #f57c00;
 }
 
+/* 관리자 컨트롤 버튼 스타일 */
+.admin-controls {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.admin-controls .btn {
+  font-weight: 500;
+}
+
+/* 신고된 게시글 스타일 */
+.reported-post-item {
+  border-left: 3px solid var(--warning-color) !important;
+  background-color: rgba(255, 248, 225, 0.3);
+}
+
+.admin-title {
+  color: var(--accent-color);
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.section-title {
+  color: var(--text-color);
+  font-weight: 600;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.reported-content-section {
+  background-color: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  margin-bottom: 2rem;
+}
+
+.report-reasons {
+  padding-left: 1.2rem;
+  font-size: 0.85rem;
+}
+
+.admin-quick-actions {
+  z-index: 10;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.table-hover tbody tr:hover {
+  background-color: var(--light-bg);
+}
+
 @media (max-width: 768px) {
   .custom-table {
     padding: 1rem;
@@ -207,16 +264,5 @@
   .search-container .input-group {
     width: 100% !important;
   }
-}
-
-/* 관리자 컨트롤 버튼 스타일 */
-.admin-controls {
-  margin-top: 2rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--border-color);
-}
-
-.admin-controls .btn {
-  font-weight: 500;
 }
 

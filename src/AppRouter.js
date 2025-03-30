@@ -8,6 +8,7 @@ function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/" element={<PostListPage />} />
         <Route path="/community" element={<PostListPage />} />
         <Route path="/community/write" element={<WritePostPage />} />
         <Route path="/community/post/:id" element={<PostDetailPage />} />
@@ -18,4 +19,6 @@ function AppRouter() {
 }
 
 export default AppRouter
+
+
 

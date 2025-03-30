@@ -154,38 +154,6 @@
   box-shadow: 0 0 0 0.2rem rgba(78, 205, 196, 0.25);
 }
 
-/* 관리자 섹션 스타일 */
-.admin-section {
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  padding: 1rem;
-  border: 1px solid #dee2e6;
-  margin-top: 2rem;
-}
-
-.admin-section h5 {
-  color: var(--accent-color);
-  font-weight: 600;
-}
-
-.report-list {
-  font-size: 0.9rem;
-}
-
-.report-list .table {
-  margin-bottom: 0;
-}
-
-.report-list .table th {
-  font-weight: 600;
-  color: var(--text-color);
-}
-
-.report-list .badge {
-  font-weight: 500;
-  padding: 0.35em 0.65em;
-}
-
 /* 모달 스타일 */
 .modal-backdrop {
   position: fixed;
@@ -225,6 +193,77 @@
 .form-check-input:checked {
   background-color: var(--primary-color);
   border-color: var(--primary-color);
+}
+
+/* 신고된 게시글 스타일 */
+.post-reported {
+  position: relative;
+}
+
+.post-reported::before {
+  content: "신고된 게시글";
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background-color: #f57c00;
+  color: white;
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 600;
+  z-index: 1;
+}
+
+/* 관리자 섹션 스타일 개선 */
+.admin-section {
+  background-color: #fff8e1;
+  border-radius: 8px;
+  padding: 1.5rem;
+  border: 1px solid #ffe082;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.admin-section h5 {
+  color: #f57c00;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.admin-section .alert {
+  margin-bottom: 0;
+}
+
+.admin-section ul {
+  padding-left: 1.5rem;
+}
+
+.report-list {
+  font-size: 0.9rem;
+  margin-top: 1rem;
+}
+
+.report-list .table {
+  margin-bottom: 0;
+  border: 1px solid #ffe082;
+}
+
+.report-list .table th {
+  font-weight: 600;
+  color: var(--text-color);
+  background-color: #fff3cd;
+}
+
+.report-count {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #f57c00;
+}
+
+/* 신고된 댓글 스타일 */
+.reported-comment {
+  background-color: rgba(255, 248, 225, 0.3);
+  border-left: 3px solid #f57c00;
 }
 
 @media (max-width: 768px) {
