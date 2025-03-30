@@ -1,0 +1,170 @@
+.write-post-container {
+  max-width: 900px;
+  margin-bottom: 3rem;
+}
+
+.card {
+  border-radius: 10px;
+  border: none;
+}
+
+.card-header {
+  border-bottom: 1px solid var(--border-color);
+  padding: 1.5rem;
+  border-radius: 10px 10px 0 0 !important;
+}
+
+.card-header h2 {
+  color: var(--accent-color);
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.form-label {
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+.form-control:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 0.2rem rgba(78, 205, 196, 0.25);
+}
+
+/* 장소 드롭다운 스타일 */
+.location-dropdown {
+  position: absolute;
+  width: 100%;
+  max-height: 250px;
+  overflow-y: auto;
+  background-color: white;
+  border: 1px solid var(--border-color);
+  border-radius: 0 0 5px 5px;
+  z-index: 1000;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.location-item {
+  padding: 10px 15px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.location-item:last-child {
+  border-bottom: none;
+}
+
+.location-item:hover {
+  background-color: var(--light-bg);
+}
+
+.location-name {
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+.location-address {
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+/* 지도 컨테이너 스타일 */
+.map-container {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: white;
+}
+
+.map-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  background-color: var(--light-bg);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.map-header h5 {
+  margin: 0;
+  color: var(--accent-color);
+  font-weight: 600;
+}
+
+.map-search {
+  padding: 10px 15px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.map-view {
+  height: 400px;
+  position: relative;
+}
+
+.map-footer {
+  padding: 10px 15px;
+  background-color: var(--light-bg);
+  border-top: 1px solid var(--border-color);
+}
+
+/* 모의 지도 스타일 (실제 구현에서는 제거) */
+.mock-map {
+  height: 100%;
+  background-color: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed #ced4da;
+}
+
+.mock-map-center {
+  width: 80%;
+  max-width: 500px;
+}
+
+.mock-markers {
+  margin-top: 20px;
+  text-align: left;
+}
+
+.mock-markers h6 {
+  margin-bottom: 10px;
+}
+
+.mock-markers .list-group-item {
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mock-markers .list-group-item:hover {
+  background-color: #f8f9fa;
+}
+
+.mock-markers .list-group-item.active {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+/* 선택된 장소 스타일 */
+.selected-location .alert {
+  padding: 10px 15px;
+  margin-bottom: 0;
+}
+
+.selected-location .btn-outline-danger {
+  padding: 0.25rem 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .card-header {
+    padding: 1rem;
+  }
+
+  .card-header h2 {
+    font-size: 1.3rem;
+  }
+
+  .map-view {
+    height: 300px;
+  }
+}
+
