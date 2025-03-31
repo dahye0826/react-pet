@@ -15,11 +15,6 @@ function PostDetailPage() {
   const [commentText, setCommentText] = useState("")
   const [isLoggedIn, setIsLoggedIn] = useState(true) // 테스트용
   const [currentUserId, setCurrentUserId] = useState(999) // 테스트용 현재 사용자 ID
-  const [showReportModal, setShowReportModal] = useState(false)
-  const [reportReason, setReportReason] = useState("")
-  const [reportDescription, setReportDescription] = useState("")
-  const [showCommentReportModal, setShowCommentReportModal] = useState(false)
-  const [selectedCommentId, setSelectedCommentId] = useState(null)
 
   // 댓글 수정 관련 상태
   const [editingCommentId, setEditingCommentId] = useState(null)
@@ -173,76 +168,6 @@ function PostDetailPage() {
     }
   }
 
-  // 댓글 신고 처리
-  const handleReportComment = (commentId) => {
-    // 로그인 상태 확인
-    if (!isLoggedIn) {
-      alert("신고하려면 로그인이 필요합니다.")
-      return
-    }
-
-    setSelectedCommentId(commentId)
-    setShowCommentReportModal(true)
-    setReportReason("")
-  }
-
-  // 댓글 신고 제출
-  const handleCommentReportSubmit = () => {
-    if (!reportReason) {
-      alert("신고 사유를 선택해주세요.")
-      return
-    }
-
-    const targetComment = comments.find((comment) => comment.id === selectedCommentId)
-    if (!targetComment) return
-
-    // 로컬 스토리지에 신고 데이터 저장
-    const existingReports = JSON.parse(localStorage.getItem("reportedComments") || "[]")
-
-    // 이미 신고된 댓글인지 확인
-    const existingReportIndex = existingReports.findIndex(
-      (report) => report.commentId === selectedCommentId && report.postId === Number(id),
-    )
-
-    const updatedReports = [...existingReports]
-
-    if (existingReportIndex !== -1) {
-      // 이미 신고된 댓글이면 신고 사유 추가
-      const existingReport = existingReports[existingReportIndex]
-      const existingReasonIndex = existingReport.reports.findIndex((r) => r.reason === reportReason)
-
-      if (existingReasonIndex !== -1) {
-        // 같은 사유로 이미 신고된 경우 카운트 증가
-        existingReport.reports[existingReasonIndex].count += 1
-      } else {
-        // 새로운 사유로 신고된 경우 사유 추가
-        existingReport.reports.push({ reason: reportReason, count: 1 })
-      }
-
-      existingReport.reportCount += 1
-      updatedReports[existingReportIndex] = existingReport
-    } else {
-      // 새로운 신고 댓글 추가
-      const newReport = {
-        postId: Number(id),
-        postTitle: post.title,
-        commentId: selectedCommentId,
-        commentContent: targetComment.content,
-        author: targetComment.author,
-        reportCount: 1,
-        reports: [{ reason: reportReason, count: 1 }],
-      }
-      updatedReports.push(newReport)
-    }
-
-    localStorage.setItem("reportedComments", JSON.stringify(updatedReports))
-
-    alert("댓글 신고가 접수되었습니다.")
-    setShowCommentReportModal(false)
-    setReportReason("")
-    setSelectedCommentId(null)
-  }
-
   const handleGoBack = () => {
     navigate("/community")
   }
@@ -255,69 +180,6 @@ function PostDetailPage() {
 
   const handleEditClick = () => {
     navigate(`/community/edit/${id}`)
-  }
-
-  const handleReportClick = () => {
-    // 로그인 상태 확인
-    if (!isLoggedIn) {
-      alert("신고하려면 로그인이 필요합니다.")
-      return
-    }
-
-    setShowReportModal(true)
-  }
-
-  const handleReportSubmit = () => {
-    if (!reportReason) {
-      alert("신고 사유를 선택해주세요.")
-      return
-    }
-
-    // 실제 구현에서는 API 호출로 대체
-    console.log("신고 데이터:", {
-      postId: id,
-      reason: reportReason,
-      description: reportDescription,
-    })
-
-    // 로컬 스토리지에 신고 데이터 저장 (테스트용)
-    const existingReports = JSON.parse(localStorage.getItem("reportedPosts") || "[]")
-
-    // 이미 신고된 게시글인지 확인
-    const existingReportIndex = existingReports.findIndex((report) => report.postId === Number(id))
-
-    if (existingReportIndex !== -1) {
-      // 이미 신고된 게시글이면 신고 사유 추가
-      const existingReport = existingReports[existingReportIndex]
-      const existingReasonIndex = existingReport.reports.findIndex((r) => r.reason === reportReason)
-
-      if (existingReasonIndex !== -1) {
-        // 같은 사유로 이미 신고된 경우 카운트 증가
-        existingReport.reports[existingReasonIndex].count += 1
-      } else {
-        // 새로운 사유로 신고된 경우 사유 추가
-        existingReport.reports.push({ reason: reportReason, count: 1 })
-      }
-
-      existingReport.reportCount += 1
-      existingReports[existingReportIndex] = existingReport
-    } else {
-      // 새로운 신고 게시글 추가
-      existingReports.push({
-        postId: Number(id),
-        title: post.title,
-        author: post.author,
-        reportCount: 1,
-        reports: [{ reason: reportReason, count: 1 }],
-      })
-    }
-
-    localStorage.setItem("reportedPosts", JSON.stringify(existingReports))
-
-    alert("신고가 접수되었습니다.")
-    setShowReportModal(false)
-    setReportReason("")
-    setReportDescription("")
   }
 
   console.log("Loading state:", loading) // 디버깅용
@@ -409,13 +271,6 @@ function PostDetailPage() {
             ) : (
               <div></div> // 작성자가 아닌 경우 왼쪽에 빈 div
             )}
-
-            {/* 작성자가 아닌 경우에만 신고 버튼 표시 */}
-            {post.authorId !== currentUserId && (
-              <button className="btn btn-outline-warning" onClick={handleReportClick}>
-                <i className="bi bi-exclamation-triangle me-1"></i> 신고하기
-              </button>
-            )}
           </div>
 
           <div className="post-comments mt-5">
@@ -500,16 +355,6 @@ function PostDetailPage() {
                                 </button>
                               </>
                             )}
-                            {comment.authorId !== currentUserId && isLoggedIn && (
-                              // 현재 사용자가 댓글 작성자가 아닌 경우 신고 버튼 표시 (로그인한 경우에만)
-                              <button
-                                className="btn btn-sm btn-link text-decoration-none text-warning"
-                                onClick={() => handleReportComment(comment.id)}
-                              >
-                                <i className="bi bi-exclamation-triangle-fill me-1"></i>
-                                신고
-                              </button>
-                            )}
                           </div>
                         </div>
                         <div className="comment-content mt-2">{comment.content}</div>
@@ -522,196 +367,6 @@ function PostDetailPage() {
                   <p className="text-muted">아직 댓글이 없습니다. 첫 댓글을 작성해보세요!</p>
                 </div>
               )}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 게시글 신고하기 모달 */}
-      {showReportModal && <div className="modal-backdrop show"></div>}
-
-      <div className={`modal ${showReportModal ? "show d-block" : ""}`} tabIndex="-1">
-        <div className="modal-dialog modal-dialog-centered">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title">
-                <i className="bi bi-exclamation-triangle me-2 text-warning"></i>
-                게시글 신고하기
-              </h5>
-              <button type="button" className="btn-close" onClick={() => setShowReportModal(false)}></button>
-            </div>
-            <div className="modal-body">
-              <form>
-                <div className="mb-3">
-                  <label className="form-label fw-bold">신고 사유</label>
-                  <div className="form-check mt-2">
-                    <input
-                      className="form-check-input"
-                      type="radio"
-                      name="reportReason"
-                      id="reason1"
-                      value="부적절한 내용"
-                      checked={reportReason === "부적절한 내용"}
-                      onChange={(e) => setReportReason(e.target.value)}
-                    />
-                    <label className="form-check-label" htmlFor="reason1">
-                      부적절한 내용
-                    </label>
-                  </div>
-                  <div className="form-check">
-                    <input
-                      className="form-check-input"
-                      type="radio"
-                      name="reportReason"
-                      id="reason2"
-                      value="스팸 또는 광고"
-                      checked={reportReason === "스팸 또는 광고"}
-                      onChange={(e) => setReportReason(e.target.value)}
-                    />
-                    <label className="form-check-label" htmlFor="reason2">
-                      스팸 또는 광고
-                    </label>
-                  </div>
-                  <div className="form-check">
-                    <input
-                      className="form-check-input"
-                      type="radio"
-                      name="reportReason"
-                      id="reason3"
-                      value="저작권 침해"
-                      checked={reportReason === "저작권 침해"}
-                      onChange={(e) => setReportReason(e.target.value)}
-                    />
-                    <label className="form-check-label" htmlFor="reason3">
-                      저작권 침해
-                    </label>
-                  </div>
-                  <div className="form-check">
-                    <input
-                      className="form-check-input"
-                      type="radio"
-                      name="reportReason"
-                      id="reason4"
-                      value="욕설 또는 혐오 발언"
-                      checked={reportReason === "욕설 또는 혐오 발언"}
-                      onChange={(e) => setReportReason(e.target.value)}
-                    />
-                    <label className="form-check-label" htmlFor="reason4">
-                      욕설 또는 혐오 발언
-                    </label>
-                  </div>
-                  <div className="form-check">
-                    <input
-                      className="form-check-input"
-                      type="radio"
-                      name="reportReason"
-                      id="reason5"
-                      value="기타"
-                      checked={reportReason === "기타"}
-                      onChange={(e) => setReportReason(e.target.value)}
-                    />
-                    <label className="form-check-label" htmlFor="reason5">
-                      기타
-                    </label>
-                  </div>
-                </div>
-              </form>
-            </div>
-            <div className="modal-footer">
-              <button type="button" className="btn btn-secondary" onClick={() => setShowReportModal(false)}>
-                취소
-              </button>
-              <button type="button" className="btn btn-danger" onClick={handleReportSubmit}>
-                신고하기
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 댓글 신고하기 모달 */}
-      {showCommentReportModal && <div className="modal-backdrop show"></div>}
-
-      <div className={`modal ${showCommentReportModal ? "show d-block" : ""}`} tabIndex="-1">
-        <div className="modal-dialog modal-dialog-centered">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title">
-                <i className="bi bi-exclamation-triangle me-2 text-warning"></i>
-                댓글 신고하기
-              </h5>
-              <button type="button" className="btn-close" onClick={() => setShowCommentReportModal(false)}></button>
-            </div>
-            <div className="modal-body">
-              <form>
-                <div className="mb-3">
-                  <label className="form-label fw-bold">신고 사유</label>
-                  <div className="form-check mt-2">
-                    <input
-                      className="form-check-input"
-                      type="radio"
-                      name="commentReportReason"
-                      id="commentReason1"
-                      value="부적절한 내용"
-                      checked={reportReason === "부적절한 내용"}
-                      onChange={(e) => setReportReason(e.target.value)}
-                    />
-                    <label className="form-check-label" htmlFor="commentReason1">
-                      부적절한 내용
-                    </label>
-                  </div>
-                  <div className="form-check">
-                    <input
-                      className="form-check-input"
-                      type="radio"
-                      name="commentReportReason"
-                      id="commentReason2"
-                      value="스팸 또는 광고"
-                      checked={reportReason === "스팸 또는 광고"}
-                      onChange={(e) => setReportReason(e.target.value)}
-                    />
-                    <label className="form-check-label" htmlFor="commentReason2">
-                      스팸 또는 광고
-                    </label>
-                  </div>
-                  <div className="form-check">
-                    <input
-                      className="form-check-input"
-                      type="radio"
-                      name="commentReportReason"
-                      id="commentReason3"
-                      value="욕설 또는 혐오 발언"
-                      checked={reportReason === "욕설 또는 혐오 발언"}
-                      onChange={(e) => setReportReason(e.target.value)}
-                    />
-                    <label className="form-check-label" htmlFor="commentReason3">
-                      욕설 또는 혐오 발언
-                    </label>
-                  </div>
-                  <div className="form-check">
-                    <input
-                      className="form-check-input"
-                      type="radio"
-                      name="commentReportReason"
-                      id="commentReason4"
-                      value="기타"
-                      checked={reportReason === "기타"}
-                      onChange={(e) => setReportReason(e.target.value)}
-                    />
-                    <label className="form-check-label" htmlFor="commentReason4">
-                      기타
-                    </label>
-                  </div>
-                </div>
-              </form>
-            </div>
-            <div className="modal-footer">
-              <button type="button" className="btn btn-secondary" onClick={() => setShowCommentReportModal(false)}>
-                취소
-              </button>
-              <button type="button" className="btn btn-danger" onClick={handleCommentReportSubmit}>
-                신고하기
-              </button>
             </div>
           </div>
         </div>

@@ -5,12 +5,6 @@
   --text-color: #2c3e50;
   --light-bg: #f0f9fa;
   --border-color: #d1eeef;
-  --warning-color: #f57c00;
-  --warning-bg: #fff8e1;
-  --warning-border: #ffe082;
-  --danger-color: #d32f2f;
-  --danger-bg: #ffebee;
-  --danger-border: #ffcdd2;
 }
 
 .custom-table {
@@ -143,43 +137,6 @@
   box-shadow: 0 0 0 0.2rem rgba(78, 205, 196, 0.25);
 }
 
-/* 관리자 섹션 스타일 */
-.admin-section {
-  background-color: #fff8e1;
-  border-radius: 8px;
-  padding: 1.5rem;
-  border: 1px solid #ffe082;
-  margin-bottom: 2rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-.admin-section h5 {
-  color: #f57c00;
-  font-weight: 600;
-}
-
-.report-list {
-  font-size: 0.9rem;
-  margin-top: 1rem;
-}
-
-.report-list .table {
-  margin-bottom: 0;
-  border: 1px solid #ffe082;
-}
-
-.report-list .table th {
-  font-weight: 600;
-  color: var(--text-color);
-  background-color: #fff3cd;
-}
-
-.report-count {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #f57c00;
-}
-
 /* 관리자 컨트롤 버튼 스타일 */
 .admin-controls {
   margin-top: 2rem;
@@ -189,51 +146,6 @@
 
 .admin-controls .btn {
   font-weight: 500;
-}
-
-/* 신고된 게시글 스타일 */
-.reported-post-item {
-  border-left: 3px solid var(--warning-color) !important;
-  background-color: rgba(255, 248, 225, 0.3);
-}
-
-.admin-title {
-  color: var(--accent-color);
-  font-weight: 600;
-  margin-bottom: 1rem;
-}
-
-.section-title {
-  color: var(--text-color);
-  font-weight: 600;
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.reported-content-section {
-  background-color: white;
-  border-radius: 8px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  margin-bottom: 2rem;
-}
-
-.report-reasons {
-  padding-left: 1.2rem;
-  font-size: 0.85rem;
-}
-
-.admin-quick-actions {
-  z-index: 10;
-}
-
-.table-responsive {
-  overflow-x: auto;
-}
-
-.table-hover tbody tr:hover {
-  background-color: var(--light-bg);
 }
 
 @media (max-width: 768px) {

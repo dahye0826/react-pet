@@ -21,7 +21,7 @@ function Footer() {
             <ul className="footer-links">
               <li>
                 <a href="/">
-                  <i className="bi bi-map me-2"></i>지도
+                  <i className="bi bi-map me-2"></i>장소 목록
                 </a>
               </li>
               <li>

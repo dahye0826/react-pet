@@ -16,7 +16,7 @@ function Navbar({ isLoggedIn }) {
             <li className="nav-item">
               <a className="nav-link" href="/">
                 <i className="bi bi-map me-1"></i>
-                지도
+                장소 목록
               </a>
             </li>
             <li className="nav-item">
