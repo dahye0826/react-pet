@@ -58,17 +58,9 @@
   background-color: var(--border-color);
 }
 
-.location-name {
-  font-weight: 500;
-}
-
 .post-content {
   line-height: 1.8;
   color: var(--text-color);
-}
-
-.post-content p {
-  margin-bottom: 1rem;
 }
 
 .post-image-container {
@@ -133,16 +125,11 @@
   color: #6c757d;
 }
 
-.comment-actions {
-  font-size: 0.85rem;
-}
-
 .comment-content {
   color: var(--text-color);
   line-height: 1.6;
 }
 
-/* 댓글 수정 폼 스타일 */
 .comment-edit-form textarea {
   border-color: var(--border-color);
   resize: none;
@@ -181,10 +168,6 @@
     width: 100%;
     display: flex;
     justify-content: space-between;
-  }
-
-  .post-actions button {
-    flex: 1;
   }
 }
 

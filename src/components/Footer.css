@@ -7,7 +7,6 @@
   --border-color: #d1eeef;
 }
 
-/* 푸터 스타일 */
 .footer {
   background-color: white;
   border-top: 1px solid var(--border-color);

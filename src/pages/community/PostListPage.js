@@ -1,78 +1,62 @@
-"use client"
-
+import axios from "axios"
 import { useNavigate } from "react-router-dom"
 import { useState, useEffect } from "react"
 import "bootstrap-icons/font/bootstrap-icons.css"
 import "bootstrap/dist/css/bootstrap.min.css"
 import "./PostListPage.css"
-import { mockPosts } from "./mockData"
 import Navbar from "../../components/Navbar"
 import Footer from "../../components/Footer"
 
 function PostListPage() {
-  const [posts, setPosts] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [isLoggedIn, setIsLoggedIn] = useState(false) // 로그인 상태 관리
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const[loading,setLoading]= useState(true)
+  const[currentPage,setCurrentPage]= useState(1)
   const [searchTerm, setSearchTerm] = useState("")
+  const[posts,setPosts] = useState([])
+
+
   const navigate = useNavigate()
 
-  // 페이징 관련 상태 추가
-  const [currentPage, setCurrentPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(5) // 테스트용 총 페이지 수
+  const handleSearch = async()=>{
+    
+    if(!searchTerm.trim()) return
 
-  useEffect(() => {
-    // Fetch posts from backend
-    const fetchPosts = async () => {
-      try {
-        setLoading(true)
-        // 실제 API 연결 시 아래 주석을 해제하세요
-        // const response = await axios.get('/api/posts');
-        // setPosts(response.data);
+    try{
+      setLoading(true)
+      const response = await axios.get("http://localhost:9000/api/community",{
+        params:{
+          search:searchTerm,
+          page:1,
+          size:10,
+        },
+      })
+     
 
-        // 테스트용 목업 데이터
-        setTimeout(() => {
-          // 날짜 형식 확인 - 시간 제거
-          const formattedPosts = mockPosts.map((post) => ({
-            ...post,
-            createdAt: post.createdAt.split(" ")[0], // 날짜 부분만 사용
-          }))
-          setPosts(formattedPosts)
-          setLoading(false)
-        }, 500)
-      } catch (error) {
-        console.error("Error fetching posts:", error)
-        setLoading(false)
-      }
-    }
 
-    fetchPosts()
-  }, [])
+      const formattedPosts = response.data.content.map((post)=>({
+        ...post,
+        createdAt:post.createdAt.split("T")[0],
+      }))
 
-  const handleSearch = () => {
-    if (!searchTerm.trim()) return
-
-    // 실제 구현에서는 API 호출로 대체
-    setLoading(true)
-    setTimeout(() => {
-      const filteredPosts = mockPosts
-        .filter((post) => post.title.toLowerCase().includes(searchTerm.toLowerCase()))
-        .map((post) => ({
-          ...post,
-          createdAt: post.createdAt.split(" ")[0], // 날짜 부분만 사용
-        }))
-      setPosts(filteredPosts)
+      setPosts(formattedPosts)
+      setCurrentPage(1)
+      // setTotalPages(response.data.totalPages)
       setLoading(false)
-    }, 300)
+    }catch(error){ 
+    console.error("검색오류:",error)}
+    setLoading(false)
+    
   }
 
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
+  const handleKeyDown = (e)=>{
+    if (e.key=="Enter"){
       handleSearch()
     }
   }
+  
+  
 
   const handleWriteClick = () => {
-    // 로그인 상태 확인
     if (!isLoggedIn) {
       alert("글을 작성하려면 로그인이 필요합니다.")
       return
@@ -84,58 +68,20 @@ function PostListPage() {
     navigate(`/community/post/${postId}`)
   }
 
-  // 페이지 변경 핸들러 추가
-  const handlePageChange = (page) => {
-    if (page < 1 || page > totalPages) return
-    setCurrentPage(page)
-
-    // 실제 구현에서는 여기서 해당 페이지의 데이터를 불러옵니다
-    setLoading(true)
-    setTimeout(() => {
-      // 테스트용 데이터 - 페이지 번호에 따라 다른 데이터를 보여줍니다
-      const formattedPosts = mockPosts.map((post) => ({
-        ...post,
-        id: post.id + (page - 1) * 4, // 페이지별로 다른 ID 부여
-        title: `${post.title} - 페이지 ${page}`,
-        createdAt: post.createdAt.split(" ")[0],
-      }))
-      setPosts(formattedPosts)
-      setLoading(false)
-    }, 500)
-  }
-
-  // 페이지네이션 UI를 위한 페이지 번호 배열 생성
-  const getPageNumbers = () => {
-    const pageNumbers = []
-    const maxPagesToShow = 5 // 한 번에 보여줄 페이지 번호 개수
-
-    let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2))
-    let endPage = startPage + maxPagesToShow - 1
-
-    if (endPage > totalPages) {
-      endPage = totalPages
-      startPage = Math.max(1, endPage - maxPagesToShow + 1)
-    }
-
-    for (let i = startPage; i <= endPage; i++) {
-      pageNumbers.push(i)
-    }
-
-    return pageNumbers
-  }
-
+    
   return (
+   
     <>
-      {/* 네비게이션 바 컴포넌트 */}
+      네비게이션 바 컴포넌트
       <Navbar isLoggedIn={isLoggedIn} />
 
       <div className="container mt-4 custom-table">
-        <div className="review-header text-center">
+        <div className="post-header text-center">
           <h2 className="mb-4">우리의 발자국 이야기</h2>
           <p className="subtitle mb-5">반려동물과 함께 떠난 소중한 시간을 남겨보세요.</p>
         </div>
 
-        {/* UserPostListView 내용을 직접 포함 */}
+
         <div className="search-container mb-4">
           <div className="d-flex align-items-center position-relative">
             {/* 글쓰기 버튼 - 왼쪽 고정 */}
@@ -173,19 +119,18 @@ function PostListPage() {
           ) : posts.length > 0 ? (
             posts.map((post) => (
               <div
-                key={post.id}
+                key={post.post_id}
                 className="post-list-item p-3 border-bottom"
-                onClick={() => handlePostClick(post.id)}
+                onClick={() => handlePostClick(post.post_id)}
                 style={{ cursor: "pointer" }}
               >
                 <div className="d-flex justify-content-between align-items-start">
                   <h5 className="mb-1">{post.title}</h5>
                 </div>
-                <p className="text-muted small mb-1">{post.preview}</p>
 
                 <div className="d-flex justify-content-between text-muted small">
                   <div className="d-flex">
-                    <span className="me-2">{post.author}</span>
+                    <span className="me-2">{post.name}</span>
                     <span className="me-3">{post.createdAt}</span>
                     <span>
                       <i className="bi bi-chat-left-text me-1"></i> {post.commentCount}

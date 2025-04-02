@@ -7,7 +7,6 @@
   --border-color: #d1eeef;
 }
 
-/* 네비게이션 바 스타일 */
 .navbar {
   background-color: white;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
@@ -46,7 +45,6 @@
   color: var(--accent-color);
 }
 
-/* 마이페이지 버튼 스타일 */
 .navbar .btn {
   padding: 0.375rem 0.75rem;
   border-radius: 4px;
@@ -63,7 +61,6 @@
   background-color: var(--light-bg);
 }
 
-/* 회원가입 버튼 스타일 */
 .navbar a.btn-primary {
   color: white;
 }
@@ -73,7 +70,6 @@
   background-color: var(--accent-color);
 }
 
-/* 반응형 스타일 */
 @media (max-width: 768px) {
   .navbar-nav .nav-link {
     margin: 5px 0;
